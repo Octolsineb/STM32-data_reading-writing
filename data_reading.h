@@ -20,7 +20,7 @@
 	char buf1[50];
 	char buf2[50];
 	char buf3[50];
-	char bufall[5060];
+	char bufall[8192];
   
 extern int reading_line_No;
 int i=0,j=0,k=0;
@@ -29,8 +29,65 @@ typedef double real_T;
 typedef float real32_T;
 
 real32_T time;
+real_T temp[36];
+char* ptr,enter='\n';
+void new_data_read(void)
+{
+	int count=0;
+f_lseek(&objtxt, j);
+f_read(&objtxt,buffer_gnss_data,512,&brs);
+ptr= strchr(buffer_gnss_data,enter);
+	buffer_gnss_data[ptr-buffer_gnss_data]=0x00;
+	j=j+ptr-buffer_gnss_data;
+	char*tokenPtr =strtok(buffer_gnss_data," ");
+	while(tokenPtr != NULL)
+	{
+	temp[count]=atof(tokenPtr);
+		tokenPtr = strtok(NULL, " ");
+		count++;
+	}
+				time=temp[0]; 
+				GNSS_INS_Fusion_U.IMU_ACC[0]=temp[1];
+				GNSS_INS_Fusion_U.IMU_ACC[1]=temp[2]; 
+		    GNSS_INS_Fusion_U.IMU_ACC[2]=temp[3]; 
+				GNSS_INS_Fusion_U.IMU_Gyro[0]=temp[4];
+				GNSS_INS_Fusion_U.IMU_Gyro[1]=temp[5];
+				GNSS_INS_Fusion_U.IMU_Gyro[2]=temp[6];
+				GNSS_INS_Fusion_U.HeadingAngle_GNSS=temp[7];
+				GNSS_INS_Fusion_U.Latitude_GNSS_Int=temp[8];
+				GNSS_INS_Fusion_U.Longitude_GNSS_Int=temp[9];
+				GNSS_INS_Fusion_U.Latitude_GNSS_Dec=temp[10];
+				GNSS_INS_Fusion_U.Longitude_GNSS_Dec=temp[11];
+				GNSS_INS_Fusion_U.Pos_RMS_G[0]=temp[12];
+				GNSS_INS_Fusion_U.Pos_RMS_G[1]=temp[13];
+				GNSS_INS_Fusion_U.VehicleSpeed=temp[14];
+			  GNSS_INS_Fusion_U. Quality_GNSS=temp[15];
+			  GNSS_INS_Fusion_U.Vel_Level_GNSS=temp[16];
+			  GNSS_INS_Fusion_U.Course_GNSS=temp[17];
+			  GNSS_INS_Fusion_U.SteeringAngleValid=temp[18];
+			  GNSS_INS_Fusion_U.SteeringAngle=temp[19];
+			  GNSS_INS_Fusion_U.Heading_RMS_GNSS=temp[20];
+			  GNSS_INS_Fusion_U.Soln_SVs_GNSS=temp[21];
+			  GNSS_INS_Fusion_U.GNSS_Height=temp[22];
+				GNSS_INS_Fusion_U.Soln_SVs_Ante2_GNSS=temp[23];
+			  GNSS_INS_Fusion_U.GNSS_Vel_Vertical=temp[24];
+			  GNSS_INS_Fusion_U.GNSS_Vel_Latency=temp[25];
+			  GNSS_INS_Fusion_U.Heading_time=temp[26];
+				GNSS_INS_Fusion_U.Pos_time=temp[27];
+			  GNSS_INS_Fusion_U.Vel_time=temp[28];
+			  GNSS_INS_Fusion_U.Pos_double[0]=temp[29];
+			  GNSS_INS_Fusion_U.Pos_double[1]=temp[30];
+			  GNSS_INS_Fusion_U.Pos_double[2]=temp[31];
+			  GNSS_INS_Fusion_U.Lati_Dec_single=temp[32];
+			  GNSS_INS_Fusion_U.Longi_Dec_single=temp[33];
+			  GNSS_INS_Fusion_U.GNSS_Height_RMS=temp[34];
+			  GNSS_INS_Fusion_U.IMU_TEMP=temp[35];
+	
 
 
+
+
+}
 
 void data_read(void)
 {
@@ -162,7 +219,7 @@ void answer_write(void)
 	sprintf(buf3, "%.10lf \r\n",GNSS_INS_Fusion_Y.Pos_new_Dec_single_lever[2]);
 	strcat(bufall,buf3);
 	memset(buf3,0,sizeof(buf3));
-	if(strlen(bufall)>4096){
+	if(strlen(bufall)>8150){
 				f_lseek(&objtxt2,f_size(&objtxt2));
 				fr2=f_write(&objtxt2,bufall,strlen(bufall),&brs);
 				f_sync(&objtxt2);
